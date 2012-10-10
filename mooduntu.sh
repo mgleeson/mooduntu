@@ -1,6 +1,12 @@
 #! /bin/bash
 clear
-echo "The script is going to \"sudo apt-get install\" everywhere"
+read -p "What is your personal github account [git://github.com/moodle/moodle.git]:" githubaccount
+if [ -z "$githubaccount" ]; then
+    GITHUBACCOUNT="git://github.com/moodle/moodle.git"
+else
+    GITHUBACCOUNT=$githubaccount
+fi
+echo "The script is now going to update your box and install everything required. It's going to be long..."
 
 # Update ubuntu
 sudo apt-get --assume-yes update
@@ -62,6 +68,18 @@ sudo chown -R www-data /home/www-data
 
 
 # Install Moodle instances
+# This is temporary till mdk is setup as mdk install all for you
+git clone $GITHUBACCOUNT ~/Sites/Moodle_HEAD
+cd ~/Sites/Moodle_HEAD
+git remote add upstream git://git.moodle.org/moodle.git
+git fetch upstream
+cp -r ~/Sites/Moodle_HEAD ~/Sites/Moodle_23
+cd ~/Sites/Moodle_23
+git checkout -b MOODLE_23_STABLE origin/MOODLE_23_STABLE
+cp -r ~/Sites/Moodle_HEAD ~/Sites/Moodle_22
+cd ~/Sites/Moodle_22
+git checkout -b MOODLE_22_STABLE origin/MOODLE_22_STABLE
+cd ~/Sites/Moodle_HEAD
 
 # Install Netbeans
 sudo apt-get -y install netbeans
