@@ -17,6 +17,7 @@ sudo apt-get --assume-yes install vim
 
 # Git
 sudo apt-get --assume-yes install git
+git config --global color.ui true
 
 # Apache2
 sudo apt-get --assume-yes install apache2
@@ -32,11 +33,13 @@ export DEBIAN_FRONTEND=noninteractive
 echo mysql-server mysql-server/root_password password moodle | sudo debconf-set-selections
 echo mysql-server mysql-server/root_password_again password moodle | sudo debconf-set-selections
 sudo apt-get -q -y install mysql-server
-#sudo mysqladmin -u root password moodle
+mysql -uroot -p'moodle' -e "CREATE DATABASE moodle_HEAD"
+mysql -uroot -p'moodle' -e "CREATE DATABASE moodle_23"
+mysql -uroot -p'moodle' -e "CREATE DATABASE moodle_22"
 
 # PHP
 sudo apt-get --assume-yes install php5
-sudo apt-get --assume-yes install php5-curl php5-gd php5-intl php5-xmlrpc
+sudo apt-get --assume-yes install php5-mysql php5-curl php5-gd php5-intl php5-xmlrpc
 
 # Restart apache
 sudo service apache2 restart
