@@ -76,10 +76,13 @@ git fetch upstream
 cp -r ~/Sites/Moodle_HEAD ~/Sites/Moodle_23
 cd ~/Sites/Moodle_23
 git checkout -b MOODLE_23_STABLE origin/MOODLE_23_STABLE
+git pull upstream MOODLE_23_STABLE
 cp -r ~/Sites/Moodle_HEAD ~/Sites/Moodle_22
 cd ~/Sites/Moodle_22
 git checkout -b MOODLE_22_STABLE origin/MOODLE_22_STABLE
+git pull upstream MOODLE_22_STABLE
 cd ~/Sites/Moodle_HEAD
+git pull upstream master
 
 # Install Netbeans
 sudo apt-get -y install netbeans
