@@ -36,6 +36,9 @@ sudo apt-get -q -y install mysql-server
 mysql -uroot -p'moodle' -e "CREATE DATABASE moodle_HEAD"
 mysql -uroot -p'moodle' -e "CREATE DATABASE moodle_23"
 mysql -uroot -p'moodle' -e "CREATE DATABASE moodle_22"
+mysql -uroot -p'moodle' -e "ALTER DATABASE moodle_HEAD DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci"
+mysql -uroot -p'moodle' -e "ALTER DATABASE moodle_23 DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci"
+mysql -uroot -p'moodle' -e "ALTER DATABASE moodle_22 DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci"
 
 # PHP
 sudo apt-get --assume-yes install php5
