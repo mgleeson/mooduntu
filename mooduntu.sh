@@ -71,21 +71,32 @@ sudo chown -R www-data /home/www-data
 
 
 # Install Moodle instances
-# This is temporary till mdk is setup as mdk install all for you
 git clone $GITHUBACCOUNT ~/Sites/Moodle_HEAD
 cd ~/Sites/Moodle_HEAD
 git remote add upstream git://git.moodle.org/moodle.git
 git fetch upstream
+
+# Moodle 23
 cp -r ~/Sites/Moodle_HEAD ~/Sites/Moodle_23
 cd ~/Sites/Moodle_23
 git checkout -b MOODLE_23_STABLE origin/MOODLE_23_STABLE
 git pull upstream MOODLE_23_STABLE
+sudo /usr/bin/php ~/Sites/Moodle_23/admin/cli/install.php --wwwroot=http://localhost/Sites/Moodle_23 --dataroot=/home/www-data/moodledata/moodledata_23 --dbname=moodle_23 --dbpass=moodle --dbsocket --fullname="Moodle 23" --shortname=Moodle23 --adminpass=Admin2012! --non-interactive --agree-license --allow-unstable
+sudo chmod 755 ~/Sites/Moodle_23/config.php
+
+# Moodle 22
 cp -r ~/Sites/Moodle_HEAD ~/Sites/Moodle_22
 cd ~/Sites/Moodle_22
 git checkout -b MOODLE_22_STABLE origin/MOODLE_22_STABLE
 git pull upstream MOODLE_22_STABLE
+sudo /usr/bin/php ~/Sites/Moodle_22/admin/cli/install.php --wwwroot=http://localhost/Sites/Moodle_22 --dataroot=/home/www-data/moodledata/moodledata_22 --dbname=moodle_22 --dbpass=moodle --dbsocket --fullname="Moodle 22" --shortname=Moodle22 --adminpass=Admin2012! --non-interactive --agree-license --allow-unstable
+sudo chmod 755 ~/Sites/Moodle_22/config.php
+
+# Back to Moodle HEAD
 cd ~/Sites/Moodle_HEAD
 git pull upstream master
+sudo /usr/bin/php ~/Sites/Moodle_HEAD/admin/cli/install.php --wwwroot=http://localhost/Sites/Moodle_HEAD --dataroot=/home/www-data/moodledata/moodledata_HEAD --dbname=moodle_HEAD --dbpass=moodle --dbsocket --fullname="Moodle HEAD" --shortname=MoodleHEAD --adminpass=Admin2012! --non-interactive --agree-license --allow-unstable
+sudo chmod 755 ~/Sites/Moodle_HEAD/config.php
 
 # Install Netbeans
 sudo apt-get -y install netbeans
