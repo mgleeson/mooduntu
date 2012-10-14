@@ -35,12 +35,13 @@ sshkey=`cat ~/.ssh/id_rsa.pub`
 jsonparams="{\"title\":\"mooduntu ssh key\", \"key\":\"$sshkey\"}"
 curl -X POST -u "$githubuser:$githubpassword" -d "$jsonparams" -i https://api.github.com/user/keys
 
+# Don't ask for SSH confirm when adding an host
+echo 'StrictHostKeyChecking no' > ~/.ssh/config
+
 # Git
 sudo apt-get --assume-yes install git
 
-# Create a folder available from /var/www
 mkdir ~/Sites
-sudo ln -s ~/Sites /var/www/Sites
 
 # Clone the user private moodle repository fork
 # It will trigger a request to the passphrase
@@ -96,6 +97,9 @@ chmod +x ~/Documents/MoodleDevKit/moodle
 chmod +x ~/Documents/MoodleDevKit/moodle-*.py
 sudo ln -s ~/Documents/MoodleDevKit/moodle /usr/local/bin
 cp ~/Documents/MoodleDevKit/config-dist.json ~/Documents/MoodleDevKit/config.json
+
+# Create a folder available from /var/www
+sudo ln -s ~/Sites /var/www/Sites
 
 # Create moodledata dir
 sudo mkdir /home/www-data
