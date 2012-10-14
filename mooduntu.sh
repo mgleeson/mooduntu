@@ -1,12 +1,39 @@
 #! /bin/bash
 clear
-read -p "What is your personal github account [git://github.com/moodle/moodle.git]:" githubaccount
-if [ -z "$githubaccount" ]; then
-    GITHUBACCOUNT="git://github.com/moodle/moodle.git"
-else
-    GITHUBACCOUNT=$githubaccount
+echo "The script is doing multiple 'sudo apt-get install XXX', it needs your root password. "
+
+# Curl
+sudo apt-get install -y curl
+
+echo "You MUST have a Github.com account. Go to create one if haven't. This script forks the moodle repository on Github.com, if you haven't done it. Then this script adds a new SSH key to you github account so you can push directly from this VM without entering your password once the script has ran. Your login/password will only be used to do SSL curl call - even thought the script is carefully tested to not have any bug, the script contributors or distributors CANNOT be hold reponsible for the script updating/deleting your Github rep and Github account."
+read -p "Github username:" githubuser
+# Do not display the password
+stty -echo
+read -p "Github password:" githubpassword; echo
+stty echo
+# Retrieve user email address (in order to create SSH key)
+GETEMAIL=`curl -u "$githubuser:$githubpassword" -i https://api.github.com/user/emails | grep -Po '\[*"([^""]*)"' | tail -1`
+EMAIL=${GETEMAIL//\"/}
+# Fork moodle.git if not already done
+FORK=`curl -u "$githubuser:$githubpassword" -i https://api.github.com/repos/$githubuser/moodle | grep https://github.com/moodle/moodle.git`
+if [ -z "$FORK" ]; then
+    # Fork the moodle rep: asynchronous
+    # TODO before cloning check the fork has been done (even thought it's extremly rare it does not happen before)
+    curl  -u "$githubuser:$githubpassword" -X POST -i https://api.github.com/repos/moodle/moodle/forks
 fi
-echo "The script is now going to update your box and install everything required. It's going to be long..."
+
+# Set GITHUBACCOUNT variable
+GITHUBACCOUNT="git@github.com:$githubuser/moodle.git"
+# TODO support non github account, default: GITHUBACCOUNT="git://github.com/moodle/moodle.git"
+
+# Create SSH key (by default there is none in Ubuntu)
+ssh-keygen -f ~/.ssh/id_rsa -N "mooduntu passphrase" -t rsa -C "$EMAIL"
+
+# Send SSH key to github
+# TODO detect multiple mooduntu keys and offer to delete previous ones
+sshkey=`cat ~/.ssh/id_rsa.pub`
+jsonparams="{\"title\":\"mooduntu ssh key\", \"key\":\"$sshkey\"}"
+curl -X POST -u "$githubuser:$githubpassword" -d "$jsonparams" -i https://api.github.com/user/keys
 
 # Update ubuntu
 sudo apt-get --assume-yes update
