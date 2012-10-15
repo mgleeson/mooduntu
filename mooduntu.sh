@@ -154,6 +154,12 @@ php admin/tool/phpunit/cli/init.php
 cd ~/Sites/Moodle_HEAD
 php admin/tool/phpunit/cli/init.php
 
-# Install Netbeans
-sudo apt-get -y install netbeans
+# Install Java JRE 7
+sudo apt-get -y install openjdk-7-jre
+#wget http://installit.googlecode.com/hg/install.java-jdk.sh -O - | bash -
+
+# Install Netbeans for PHP
+wget http://download.netbeans.org/netbeans/7.2/final/bundles/netbeans-7.2-ml-php-linux.sh -O /tmp/netbeans-linux.sh
+echo "Installing Netbeans 7.2, please wait..."
+sudo bash /tmp/netbeans-linux.sh --silent
 
