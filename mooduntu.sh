@@ -139,6 +139,21 @@ git pull upstream master
 sudo /usr/bin/php ~/Sites/Moodle_HEAD/admin/cli/install.php --wwwroot=http://localhost/Sites/Moodle_HEAD --dataroot=/home/www-data/moodledata/moodledata_HEAD --dbname=moodle_HEAD --dbpass=moodle --dbsocket --fullname="Moodle HEAD" --shortname=MoodleHEAD --adminpass=Admin2012! --non-interactive --agree-license --allow-unstable
 sudo chmod 755 ~/Sites/Moodle_HEAD/config.php
 
+# Install PHPunit
+sudo apt-get -y install pear
+sudo pear upgrade
+sudo pear config-set auto_discover 1
+sudo pear channel-discover pear.phpunit.de
+sudo pear install pear.phpunit.de/PHPUnit
+sudo pear install phpunit/DbUnit
+
+# Run phpunit init for each instance
+# PHPUnit only exists in Moodle since 2.3
+cd ~/Sites/Moodle_23
+php admin/tool/phpunit/cli/init.php
+cd ~/Sites/Moodle_HEAD
+php admin/tool/phpunit/cli/init.php
+
 # Install Netbeans
 sudo apt-get -y install netbeans
 
