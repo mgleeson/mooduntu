@@ -140,7 +140,7 @@ sudo /usr/bin/php ~/Sites/Moodle_HEAD/admin/cli/install.php --wwwroot=http://loc
 sudo chmod 755 ~/Sites/Moodle_HEAD/config.php
 
 # Install PHPunit
-sudo apt-get -y install pear
+sudo apt-get -y install php-pear
 sudo pear upgrade
 sudo pear config-set auto_discover 1
 sudo pear channel-discover pear.phpunit.de
@@ -162,4 +162,5 @@ sudo apt-get -y install openjdk-7-jre
 wget http://download.netbeans.org/netbeans/7.2/final/bundles/netbeans-7.2-ml-php-linux.sh -O /tmp/netbeans-linux.sh
 echo "Installing Netbeans 7.2, please wait..."
 sudo bash /tmp/netbeans-linux.sh --silent
+sudo ln -s /usr/local/netbeans-7.2/bin/netbeans /usr/local/bin/netbeans
 
