@@ -2,6 +2,13 @@
 clear
 read -p "The script is doing multiple 'sudo apt-get install XXX', it needs your root password. "
 
+# Add a specific hostname
+# Note: you will need to add it on your host
+# check this VM ip with ifconfig (on virtualbox change the adpater network for bridged - the IP should something like 10.1.1.XX). Then in your host machine add mooduntu.local 10.1.1.XX in the right file (unix => /etc/hosts)
+sudo chmod 777 /etc/hosts
+sudo echo '127.0.0.1 mooduntu.local' >> /etc/hosts
+sudo chmod 644 /etc/hosts 
+
 # Curl
 sudo apt-get install -y curl
 clear
@@ -122,7 +129,7 @@ cp -r ~/Sites/Moodle_HEAD ~/Sites/Moodle_23
 cd ~/Sites/Moodle_23
 git checkout -b MOODLE_23_STABLE origin/MOODLE_23_STABLE
 git pull upstream MOODLE_23_STABLE
-sudo /usr/bin/php ~/Sites/Moodle_23/admin/cli/install.php --wwwroot=http://localhost/Sites/Moodle_23 --dataroot=/home/www-data/moodledata/moodledata_23 --dbname=moodle_23 --dbpass=moodle --dbsocket --fullname="Moodle 23" --shortname=Moodle23 --adminpass=Admin2012! --non-interactive --agree-license --allow-unstable
+sudo /usr/bin/php ~/Sites/Moodle_23/admin/cli/install.php --wwwroot=http://mooduntu.local/Sites/Moodle_23 --dataroot=/home/www-data/moodledata/moodledata_23 --dbname=moodle_23 --dbpass=moodle --dbsocket --fullname="Moodle 23" --shortname=Moodle23 --adminpass=Admin2012! --non-interactive --agree-license --allow-unstable
 sudo chmod 755 ~/Sites/Moodle_23/config.php
 
 # Moodle 22
@@ -130,13 +137,13 @@ cp -r ~/Sites/Moodle_HEAD ~/Sites/Moodle_22
 cd ~/Sites/Moodle_22
 git checkout -b MOODLE_22_STABLE origin/MOODLE_22_STABLE
 git pull upstream MOODLE_22_STABLE
-sudo /usr/bin/php ~/Sites/Moodle_22/admin/cli/install.php --wwwroot=http://localhost/Sites/Moodle_22 --dataroot=/home/www-data/moodledata/moodledata_22 --dbname=moodle_22 --dbpass=moodle --dbsocket --fullname="Moodle 22" --shortname=Moodle22 --adminpass=Admin2012! --non-interactive --agree-license --allow-unstable
+sudo /usr/bin/php ~/Sites/Moodle_22/admin/cli/install.php --wwwroot=http://mooduntu.local/Sites/Moodle_22 --dataroot=/home/www-data/moodledata/moodledata_22 --dbname=moodle_22 --dbpass=moodle --dbsocket --fullname="Moodle 22" --shortname=Moodle22 --adminpass=Admin2012! --non-interactive --agree-license --allow-unstable
 sudo chmod 755 ~/Sites/Moodle_22/config.php
 
 # Back to Moodle HEAD
 cd ~/Sites/Moodle_HEAD
 git pull upstream master
-sudo /usr/bin/php ~/Sites/Moodle_HEAD/admin/cli/install.php --wwwroot=http://localhost/Sites/Moodle_HEAD --dataroot=/home/www-data/moodledata/moodledata_HEAD --dbname=moodle_HEAD --dbpass=moodle --dbsocket --fullname="Moodle HEAD" --shortname=MoodleHEAD --adminpass=Admin2012! --non-interactive --agree-license --allow-unstable
+sudo /usr/bin/php ~/Sites/Moodle_HEAD/admin/cli/install.php --wwwroot=http://mooduntu.local/Sites/Moodle_HEAD --dataroot=/home/www-data/moodledata/moodledata_HEAD --dbname=moodle_HEAD --dbpass=moodle --dbsocket --fullname="Moodle HEAD" --shortname=MoodleHEAD --adminpass=Admin2012! --non-interactive --agree-license --allow-unstable
 sudo chmod 755 ~/Sites/Moodle_HEAD/config.php
 
 # Install PHPunit
