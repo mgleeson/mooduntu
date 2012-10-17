@@ -149,9 +149,13 @@ sudo chmod -R 0770 /home/www-data/moodledata
 sudo chown -R www-data /home/www-data
 
 # Setup Moodle Dev Kit
-#FILE=$HOME"/Documents/MoodleDevKit/config.json"
-#sed -i 's/"www": "\/var\/www"/"www": "\/var\/www\/Sites"/' $FILE
-
+moodle config set remotes.mine $GITHUBACCOUNT
+moodle config set dirs.storage $HOME/Sites
+moodle config set dirs.moodle $HOME/.moodle
+# sudo chmod 777 /var/www
+# sudo moodle create --version 23
+# cd ~/Sites/stable23/moodle
+# moodle install
 
 # Install Moodle instances
 cd ~/Sites/Moodle_HEAD
