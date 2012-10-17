@@ -13,6 +13,9 @@ sudo chmod 644 /etc/hosts
 # Create the main folder for the Moodle sites
 mkdir ~/Sites
 
+# Create a folder available from /var/www
+sudo ln -s ~/Sites /var/www/Sites
+
 # Add samba server
 sudo apt-get -y install samba smbfs
 sudo chmod 777 /etc/samba/smb.conf
@@ -81,12 +84,11 @@ curl -X POST -u "$githubuser:$githubpassword" -d "$jsonparams" -i https://api.gi
 # Don't ask for SSH confirm when adding an host
 echo 'StrictHostKeyChecking no' > ~/.ssh/config
 
+# SSH attempt to trigger the passphrase request
+ssh -T git@github.com
+
 # Git
 sudo apt-get --assume-yes install git
-
-# Clone the user private moodle repository fork
-# It will trigger a request to the passphrase
-git clone $GITHUBACCOUNT ~/Sites/Moodle_HEAD
 
 ### We are now done asking anything to the user###
 
@@ -105,8 +107,6 @@ git config --global color.ui true
 sudo apt-get --assume-yes install apache2
 
 # Mysql - set the password to 'moodle'
-# Note: the export and the last line setting empty password should not be necessary,
-# the two echo should be enough to 
 # create a cleartext copy of 'moodle' password in /var/cache/debconf/passwords.dat 
 # (which is normally only readable by root and the password will be deleted by the
 # package management system after the successfull installation of the mysql-server 
@@ -115,12 +115,6 @@ export DEBIAN_FRONTEND=noninteractive
 echo mysql-server mysql-server/root_password password moodle | sudo debconf-set-selections
 echo mysql-server mysql-server/root_password_again password moodle | sudo debconf-set-selections
 sudo apt-get -q -y install mysql-server
-mysql -uroot -p'moodle' -e "CREATE DATABASE moodle_HEAD"
-mysql -uroot -p'moodle' -e "CREATE DATABASE moodle_23"
-mysql -uroot -p'moodle' -e "CREATE DATABASE moodle_22"
-mysql -uroot -p'moodle' -e "ALTER DATABASE moodle_HEAD DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci"
-mysql -uroot -p'moodle' -e "ALTER DATABASE moodle_23 DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci"
-mysql -uroot -p'moodle' -e "ALTER DATABASE moodle_22 DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci"
 
 # PHP
 sudo apt-get --assume-yes install php5
@@ -132,58 +126,6 @@ sudo service apache2 restart
 # Install full mooduntu
 git clone git://github.com/mouneyrac/mooduntu.git ~/Documents/mooduntu
 
-# Moodle Dev Kit
-git clone git://github.com/FMCorz/mdk.git ~/Documents/MoodleDevKit
-chmod +x ~/Documents/MoodleDevKit/moodle
-chmod +x ~/Documents/MoodleDevKit/moodle-*.py
-sudo ln -s ~/Documents/MoodleDevKit/moodle /usr/local/bin
-cp ~/Documents/MoodleDevKit/config-dist.json ~/Documents/MoodleDevKit/config.json
-
-# Create a folder available from /var/www
-sudo ln -s ~/Sites /var/www/Sites
-
-# Create moodledata dir
-sudo mkdir /home/www-data
-sudo mkdir /home/www-data/moodledata
-sudo chmod -R 0770 /home/www-data/moodledata
-sudo chown -R www-data /home/www-data
-
-# Setup Moodle Dev Kit
-moodle config set remotes.mine $GITHUBACCOUNT
-moodle config set dirs.storage $HOME/Sites
-moodle config set dirs.moodle $HOME/.moodle
-# sudo chmod 777 /var/www
-# sudo moodle create --version 23
-# cd ~/Sites/stable23/moodle
-# moodle install
-
-# Install Moodle instances
-cd ~/Sites/Moodle_HEAD
-git remote add upstream git://git.moodle.org/moodle.git
-git fetch upstream
-
-# Moodle 23
-cp -r ~/Sites/Moodle_HEAD ~/Sites/Moodle_23
-cd ~/Sites/Moodle_23
-git checkout -b MOODLE_23_STABLE origin/MOODLE_23_STABLE
-git pull upstream MOODLE_23_STABLE
-sudo /usr/bin/php ~/Sites/Moodle_23/admin/cli/install.php --wwwroot=http://mooduntu.local/Sites/Moodle_23 --dataroot=/home/www-data/moodledata/moodledata_23 --dbname=moodle_23 --dbpass=moodle --dbsocket --fullname="Moodle 23" --shortname=Moodle23 --adminpass=Admin2012! --non-interactive --agree-license --allow-unstable
-sudo chmod 755 ~/Sites/Moodle_23/config.php
-
-# Moodle 22
-cp -r ~/Sites/Moodle_HEAD ~/Sites/Moodle_22
-cd ~/Sites/Moodle_22
-git checkout -b MOODLE_22_STABLE origin/MOODLE_22_STABLE
-git pull upstream MOODLE_22_STABLE
-sudo /usr/bin/php ~/Sites/Moodle_22/admin/cli/install.php --wwwroot=http://mooduntu.local/Sites/Moodle_22 --dataroot=/home/www-data/moodledata/moodledata_22 --dbname=moodle_22 --dbpass=moodle --dbsocket --fullname="Moodle 22" --shortname=Moodle22 --adminpass=Admin2012! --non-interactive --agree-license --allow-unstable
-sudo chmod 755 ~/Sites/Moodle_22/config.php
-
-# Back to Moodle HEAD
-cd ~/Sites/Moodle_HEAD
-git pull upstream master
-sudo /usr/bin/php ~/Sites/Moodle_HEAD/admin/cli/install.php --wwwroot=http://mooduntu.local/Sites/Moodle_HEAD --dataroot=/home/www-data/moodledata/moodledata_HEAD --dbname=moodle_HEAD --dbpass=moodle --dbsocket --fullname="Moodle HEAD" --shortname=MoodleHEAD --adminpass=Admin2012! --non-interactive --agree-license --allow-unstable
-sudo chmod 755 ~/Sites/Moodle_HEAD/config.php
-
 # Install PHPunit
 sudo apt-get -y install php-pear
 sudo pear upgrade
@@ -192,16 +134,42 @@ sudo pear channel-discover pear.phpunit.de
 sudo pear install pear.phpunit.de/PHPUnit
 sudo pear install phpunit/DbUnit
 
-# Run phpunit init for each instance
-# PHPUnit only exists in Moodle since 2.3
-cd ~/Sites/Moodle_23
-php admin/tool/phpunit/cli/init.php
-cd ~/Sites/Moodle_HEAD
-php admin/tool/phpunit/cli/init.php
+# Moodle Dev Kit
+git clone git://github.com/FMCorz/mdk.git ~/Documents/MoodleDevKit
+chmod +x ~/Documents/MoodleDevKit/moodle
+chmod +x ~/Documents/MoodleDevKit/moodle-*.py
+sudo ln -s ~/Documents/MoodleDevKit/moodle /usr/local/bin
+cp ~/Documents/MoodleDevKit/config-dist.json ~/Documents/MoodleDevKit/config.json
+
+# Setup Moodle Dev Kit
+moodle config set remotes.mine $GITHUBACCOUNT
+moodle config set dirs.storage $HOME/Sites
+moodle config set dirs.moodle $HOME/.moodle
+moodle config set host mooduntu.local
+moodle config set db.mysqli.passwd moodle
+# MDK require write access on /var/www
+sudo chmod 777 /var/www
+
+# Create Moodle HEAD
+moodle create --version master
+cd ~/Sites/stablemaster/moodle
+moodle install
+moodle phpunit
+
+# Create Moodle 23 Stable
+moodle create --version 23
+cd ~/Sites/stable23/moodle
+moodle install
+moodle phpunit
+
+# Create Moodle 22 Stable
+moodle create --version 22
+cd ~/Sites/stable22/moodle
+moodle install
+moodle phpunit
 
 # Install Java JRE 7
 sudo apt-get -y install openjdk-7-jre
-#wget http://installit.googlecode.com/hg/install.java-jdk.sh -O - | bash -
 
 # Install Netbeans for PHP
 wget http://download.netbeans.org/netbeans/7.2/final/bundles/netbeans-7.2-ml-php-linux.sh -O /tmp/netbeans-linux.sh
