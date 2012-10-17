@@ -1,5 +1,6 @@
 #! /bin/bash
 clear
+
 read -p "The script is doing multiple 'sudo apt-get install XXX', it needs your root password. "
 
 # Add a specific hostname
@@ -9,8 +10,43 @@ sudo chmod 777 /etc/hosts
 sudo echo '127.0.0.1 mooduntu.local' >> /etc/hosts
 sudo chmod 644 /etc/hosts 
 
+# Create the main folder for the Moodle sites
+mkdir ~/Sites
+
+# Add samba server
+sudo apt-get -y install samba smbfs
+sudo chmod 777 /etc/samba/smb.conf
+sudo echo '' >> /etc/samba/smb.conf
+sudo echo 'netbios name = mooduntu.local' >> /etc/samba/smb.conf
+sudo echo '' >> /etc/samba/smb.conf
+sudo echo 'security = user' >> /etc/samba/smb.conf
+sudo echo '' >> /etc/samba/smb.conf
+sudo echo '[moodle]' >> /etc/samba/smb.conf
+sudo echo '    comment = Moodle sites' >> /etc/samba/smb.conf
+sudo echo '    path = /home/jerome/Sites' >> /etc/samba/smb.conf
+sudo echo '    guest ok = no' >> /etc/samba/smb.conf
+sudo echo '    browseable = yes' >> /etc/samba/smb.conf
+sudo echo '    read only = no' >> /etc/samba/smb.conf
+sudo echo '    create mask = 0777' >> /etc/samba/smb.conf
+sudo echo '    directory mask = 0777' >> /etc/samba/smb.conf
+sudo echo '    force create mode = 777' >> /etc/samba/smb.conf
+sudo echo '    force directory mode = 777' >> /etc/samba/smb.conf
+sudo echo '    force security mode = 777' >> /etc/samba/smb.conf
+sudo echo '    force directory security mode = 777' >> /etc/samba/smb.conf
+sudo chmod 644 /etc/samba/smb.conf
+# Create and add samba user
+clear
+WHOAMI=`whoami`
+echo "You need to create a samba password for yourself ('$WHOAMI')"
+sudo smbpasswd -a $WHOAMI
+sudo smbpasswd -e $WHOAMI
+sudo smbd reload
+sudo restart smbd
+sudo restart nmbd
+
 # Curl
 sudo apt-get install -y curl
+
 clear
 echo "You MUST have a Github.com account. Go to create one if haven't. This script forks the moodle repository on Github.com, if you haven't done it. Then this script adds a new SSH key to you github account so you can push directly from this VM without entering your password once the script has ran. Your login/password will only be used to do SSL curl call - even thought the script is carefully tested to not have any bug, the script contributors or distributors CANNOT be hold reponsible for the script updating/deleting your Github rep and Github account."
 read -p "Github username:" githubuser
@@ -47,8 +83,6 @@ echo 'StrictHostKeyChecking no' > ~/.ssh/config
 
 # Git
 sudo apt-get --assume-yes install git
-
-mkdir ~/Sites
 
 # Clone the user private moodle repository fork
 # It will trigger a request to the passphrase
@@ -176,6 +210,4 @@ wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-ke
 sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
 sudo apt-get update 
 sudo apt-get install -y google-chrome-stable
-
-
 
