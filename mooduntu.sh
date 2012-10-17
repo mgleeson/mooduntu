@@ -27,7 +27,7 @@ sudo echo '' >> /etc/samba/smb.conf
 sudo echo '[moodle]' >> /etc/samba/smb.conf
 sudo echo '    comment = Moodle sites' >> /etc/samba/smb.conf
 sudo echo '    path = /home/jerome/Sites' >> /etc/samba/smb.conf
-sudo echo '    guest ok = no' >> /etc/samba/smb.conf
+sudo echo '    guest ok = yes' >> /etc/samba/smb.conf
 sudo echo '    browseable = yes' >> /etc/samba/smb.conf
 sudo echo '    read only = no' >> /etc/samba/smb.conf
 sudo echo '    create mask = 0777' >> /etc/samba/smb.conf
@@ -36,6 +36,7 @@ sudo echo '    force create mode = 777' >> /etc/samba/smb.conf
 sudo echo '    force directory mode = 777' >> /etc/samba/smb.conf
 sudo echo '    force security mode = 777' >> /etc/samba/smb.conf
 sudo echo '    force directory security mode = 777' >> /etc/samba/smb.conf
+sudo echo '    writable = yes' >> /etc/samba/smb.conf
 sudo chmod 644 /etc/samba/smb.conf
 # Create and add samba user
 clear
