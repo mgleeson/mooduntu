@@ -13,9 +13,6 @@ sudo chmod 644 /etc/hosts
 # Create the main folder for the Moodle sites
 mkdir ~/Sites
 
-# Create a folder available from /var/www
-sudo ln -s ~/Sites /var/www/Sites
-
 # Add samba server
 sudo apt-get -y install samba smbfs
 sudo chmod 777 /etc/samba/smb.conf
@@ -26,7 +23,7 @@ sudo echo 'security = user' >> /etc/samba/smb.conf
 sudo echo '' >> /etc/samba/smb.conf
 sudo echo '[moodle]' >> /etc/samba/smb.conf
 sudo echo '    comment = Moodle sites' >> /etc/samba/smb.conf
-sudo echo '    path = /home/jerome/Sites' >> /etc/samba/smb.conf
+sudo echo "    path = $HOME/Sites" >> /etc/samba/smb.conf
 sudo echo '    guest ok = yes' >> /etc/samba/smb.conf
 sudo echo '    browseable = yes' >> /etc/samba/smb.conf
 sudo echo '    read only = no' >> /etc/samba/smb.conf
@@ -121,8 +118,17 @@ sudo apt-get -q -y install mysql-server
 sudo apt-get --assume-yes install php5
 sudo apt-get --assume-yes install php5-mysql php5-curl php5-gd php5-intl php5-xmlrpc
 
+# Postgres
+sudo apt-get -y install postgresql php5-pgsql
+sudo service postgresql start
+sudo -u postgres psql -c"ALTER user postgres WITH PASSWORD 'moodle'"
+sudo service postgresql restart
+
 # Restart apache
 sudo service apache2 restart
+
+# Create a folder available from /var/www
+sudo ln -s ~/Sites /var/www/Sites
 
 # Install full mooduntu
 git clone git://github.com/mouneyrac/mooduntu.git ~/Documents/mooduntu
@@ -148,6 +154,8 @@ moodle config set dirs.storage $HOME/Sites
 moodle config set dirs.moodle $HOME/.moodle
 moodle config set host mooduntu.local
 moodle config set db.mysqli.passwd moodle
+moodle config set db.pgsql.user postgres
+moodle config set db.pgsql.passwd moodle
 # MDK require write access on /var/www
 sudo chmod 777 /var/www
 
@@ -155,6 +163,11 @@ sudo chmod 777 /var/www
 moodle create --version master
 cd ~/Sites/stablemaster/moodle
 moodle install
+moodle phpunit
+
+# Create Moodle HEAD for postgres
+moodle create --version master --engine pgsql -s pg --install
+cd ~/Sites/stablemaster_pg/moodle
 moodle phpunit
 
 # Create Moodle 23 Stable
@@ -167,7 +180,6 @@ moodle phpunit
 moodle create --version 22
 cd ~/Sites/stable22/moodle
 moodle install
-moodle phpunit
 
 # Install Java JRE 7
 sudo apt-get -y install openjdk-7-jre
