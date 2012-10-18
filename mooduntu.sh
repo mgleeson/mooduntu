@@ -85,9 +85,6 @@ echo 'StrictHostKeyChecking no' > ~/.ssh/config
 # SSH attempt to trigger the passphrase request
 ssh -T git@github.com
 
-# Git
-sudo apt-get --assume-yes install git
-
 ### We are now done asking anything to the user###
 
 # Update ubuntu
