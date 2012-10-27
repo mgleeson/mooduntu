@@ -14,6 +14,8 @@ sudo chmod 644 /etc/hosts
 mkdir ~/Sites
 
 # Add samba server
+# On Windows 8 go to /Windows/System32/Drivers/etc/hosts and add 10.X.X.X mooduntu.local
+# Then click right on Network in the file explorer. Add a network drive \\mooduntu.local\moodle
 sudo apt-get -y install samba smbfs
 sudo chmod 777 /etc/samba/smb.conf
 sudo echo '' >> /etc/samba/smb.conf
@@ -97,6 +99,10 @@ sudo apt-get --assume-yes install vim
 # Git
 sudo apt-get --assume-yes install git
 git config --global color.ui true
+git config --global user.email $EMAIL
+
+# Tig
+sudo apt-get -y install tig
 
 # Apache2
 sudo apt-get --assume-yes install apache2
@@ -179,17 +185,17 @@ cd ~/Sites/stable22/moodle
 moodle install
 
 # Install Java JRE 7
-sudo apt-get -y install openjdk-7-jre
+#sudo apt-get -y install openjdk-7-jre
 
 # Install Netbeans for PHP
-wget http://download.netbeans.org/netbeans/7.2/final/bundles/netbeans-7.2-ml-php-linux.sh -O /tmp/netbeans-linux.sh
-echo "Installing Netbeans 7.2, please wait..."
-sudo bash /tmp/netbeans-linux.sh --silent
-sudo ln -s /usr/local/netbeans-7.2/bin/netbeans /usr/local/bin/netbeans
+#wget http://download.netbeans.org/netbeans/7.2/final/bundles/netbeans-7.2-ml-php-linux.sh -O /tmp/netbeans-linux.sh
+#echo "Installing Netbeans 7.2, please wait..."
+#sudo bash /tmp/netbeans-linux.sh --silent
+#sudo ln -s /usr/local/netbeans-7.2/bin/netbeans /usr/local/bin/netbeans
 
 # Chrome
-wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-sudo apt-get update 
-sudo apt-get install -y google-chrome-stable
+#wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+#sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+#sudo apt-get update 
+#sudo apt-get install -y google-chrome-stable
 
