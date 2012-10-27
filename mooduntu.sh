@@ -2,6 +2,7 @@
 clear
 
 read -p "The script is doing multiple 'sudo apt-get install XXX', it needs your root password. "
+read -p "What's your fullname (for git commit)" gitfullname
 
 # Add a specific hostname
 # Note: you will need to add it on your host
@@ -100,6 +101,8 @@ sudo apt-get --assume-yes install vim
 sudo apt-get --assume-yes install git
 git config --global color.ui true
 git config --global user.email $EMAIL
+git config --global user.name "$gitfullname"
+
 
 # Tig
 sudo apt-get -y install tig
